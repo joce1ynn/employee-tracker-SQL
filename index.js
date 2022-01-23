@@ -9,6 +9,13 @@ const db = mysql.createConnection({
   database: "employee",
 });
 
+db.connect((err) => {
+  if (err) {
+    throw err;
+  }
+  purpose();
+});
+
 const purpose = () => {
   return inquirer
     .prompt([
@@ -50,15 +57,20 @@ const purpose = () => {
     });
 };
 
-purpose();
-
 const viewDept = () => {
-  db.promise()
-    .query(`SELECT * from departments`)
-    .then((data) => {
-      console.table(data);
-    });
+  db.query(`SELECT * from departments;`, (err, data) => {
+    if (err) throw err;
+    console.table(data);
+    purpose();
+  });
 };
+
+
+
+
+
+
+
 
 // const addDepartment = () => {
 //   return inquirer.prompt([
