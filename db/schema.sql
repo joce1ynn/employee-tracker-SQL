@@ -28,8 +28,3 @@ CREATE TABLE employees (
     FOREIGN KEY (role_id) REFERENCES roles(id),  
     FOREIGN KEY (manager_id) REFERENCES employees(id) ON DELETE SET NULL  
 );
-
-
--- SELECT * FROM departments;
--- SELECT * FROM roles;
--- SELECT * FROM employees;

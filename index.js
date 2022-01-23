@@ -10,29 +10,47 @@ const db = mysql.createConnection({
 });
 
 const purpose = () => {
-  return inquirer.prompt([
-    {
-      type: "list",
-      name: "purpose",
-      message: "What would you like to do?",
-      choices: [
-        "view all departments",
-        "view all roles",
-        "view all employees",
-        "Add Department",
-        "Add Role",
-        "Add Employee",
-      ],
-    },
-  ]);
+  return inquirer
+    .prompt([
+      {
+        type: "list",
+        name: "purpose",
+        message: "What would you like to do?",
+        choices: [
+          "view all departments",
+          "view all roles",
+          "view all employees",
+          "add a department",
+          "add a role",
+          "add an employee",
+          "update an employee role",
+          "EXIT",
+        ],
+      },
+    ])
+    .then((data) => {
+      if (data.purpose === "view all departments") {
+        viewDept();
+      } else if (data.purpose === "view all roles") {
+        viewRole();
+      } else if (data.purpose === "view all employees") {
+        viewEmployee();
+      } else if (data.purpose === "add a department") {
+        addDept();
+      } else if (data.purpose === "add a role") {
+        addRole();
+      } else if (data.purpose === "add an employee") {
+        addEmployee();
+      } else if (data.purpose === "update an employee role") {
+        updateRole();
+      } else if (data.purpose === "EXIT") {
+        db.end();
+        console.log("Exiting the app...");
+      }
+    });
 };
 
-purpose().then((data) => {
-  if (data.purpose === "view all departments") {
-    viewDept();
-  }
-  // else data.purpose ===
-});
+purpose();
 
 const viewDept = () => {
   db.promise()
