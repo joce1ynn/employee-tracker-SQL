@@ -2,6 +2,7 @@ const inquirer = require("inquirer");
 const mysql = require("mysql2");
 const cTable = require("console.table");
 
+// connect to mysql database
 const db = mysql.createConnection({
   host: "localhost",
   user: "root",
@@ -16,6 +17,7 @@ db.connect((err) => {
   purpose();
 });
 
+// start the app
 const purpose = () => {
   return inquirer
     .prompt([
@@ -57,6 +59,7 @@ const purpose = () => {
     });
 };
 
+// view all departments
 const viewDept = () => {
   db.query(`SELECT * from departments;`, (err, data) => {
     if (err) throw err;
@@ -65,12 +68,14 @@ const viewDept = () => {
   });
 };
 
-
-
-
-
-
-
+// view all roles
+const viewRole = () => {
+  db.query(`SELECT roles.role_id, roles.title, roles.salary, departments.dept_name from roles INNER JOIN departments on roles.dept_id = departments.dept_id;`, (err, data) => {
+    if (err) throw err;
+    console.table(data);
+    purpose();
+  });
+};
 
 // const addDepartment = () => {
 //   return inquirer.prompt([
