@@ -71,7 +71,7 @@ const viewDept = () => {
 // view all roles
 const viewRole = () => {
   db.query(
-    `SELECT roles.role_id, roles.title, departments.dept_name AS department, roles.salary 
+    `SELECT roles.role_id, roles.title, departments.name AS department, roles.salary 
      FROM roles 
      INNER JOIN departments 
      ON roles.dept_id = departments.dept_id;`,
@@ -86,7 +86,7 @@ const viewRole = () => {
 // view all employees
 const viewEmployee = () => {
   db.query(
-    `SELECT employees.employee_id, employees.first_name, employees.last_name, roles.title, departments.dept_name AS department, roles.salary, CONCAT(managers.first_name, " ", managers.last_name) AS manager
+    `SELECT employees.employee_id, employees.first_name, employees.last_name, roles.title, departments.name AS department, roles.salary, CONCAT(managers.first_name, " ", managers.last_name) AS manager
      FROM roles 
      INNER JOIN employees  
      ON roles.role_id = employees.role_id
@@ -103,6 +103,7 @@ const viewEmployee = () => {
   );
 };
 
+// add a new department
 const addDept = () => {
   return inquirer
     .prompt([
@@ -114,7 +115,7 @@ const addDept = () => {
     ])
     .then((answer) => {
       db.query(
-        `INSERT INTO departments (dept_name) 
+        `INSERT INTO departments (name) 
          VALUES ("${answer.name}") ;`,
         (err, data) => {
           if (err) throw err;
@@ -124,3 +125,54 @@ const addDept = () => {
       purpose();
     });
 };
+
+// add a new role
+const addRole = () => {
+  db.query(`SELECT * FROM departments;`, (err, data) => {
+    if (err) throw err;
+
+    let deptArray = [];
+
+    inquirer
+      .prompt([
+        {
+          type: "input",
+          name: "title",
+          message: "What is the name of the role?",
+        },
+        {
+          type: "input",
+          name: "salary",
+          message: "What is the salary of the role?",
+        },
+        {
+          type: "list",
+          name: "department",
+          message: "Which department does the role belong to?",
+          choices: function () {
+            for (let i = 0; i < data.length; i++) {
+              deptArray.push(data[i].name);
+            }
+            return deptArray;
+          },
+        },
+      ])
+      .then((answer) => {
+        db.query(
+          `INSERT INTO roles (title, salary, dept_id)
+           VALUES ("${answer.title}", "${answer.salary}", "${
+            deptArray.indexOf(answer.department) + 1
+          }") ;`,
+          (err, data) => {
+            if (err) throw err;
+          }
+        );
+        console.log("Added", `${answer.title}`, "to the database");
+        purpose();
+      });
+  });
+};
+
+// add an employee
+
+// update an employee role

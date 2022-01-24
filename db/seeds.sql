@@ -1,4 +1,4 @@
-INSERT INTO departments (dept_name) 
+INSERT INTO departments (name) 
 VALUES
 ("Sales"),
 ("Technology"),
