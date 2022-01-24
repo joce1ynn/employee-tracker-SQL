@@ -1,6 +1,6 @@
 const inquirer = require("inquirer");
 const mysql = require("mysql2");
-const cTable = require("console.table");
+const consoleTable = require("console.table");
 
 // connect to mysql database
 const db = mysql.createConnection({
@@ -174,5 +174,70 @@ const addRole = () => {
 };
 
 // add an employee
+const addEmployee = () => {
+  let managerArray = [];
+  let roleArray = [];
+
+  // get manager array
+  db.query(`SELECT * FROM employees WHERE manager_id IS NULL`, (err, data) => {
+    if (err) throw err;
+
+    data.map((manager) =>
+      managerArray.push(`${manager.first_name} ${manager.last_name}`)
+    );
+    return managerArray;
+  });
+
+  // get role array
+  db.query(`SELECT * FROM roles`, (err, data) => {
+    if (err) throw err;
+
+    data.map((role) => roleArray.push(`${role.title}`));
+    return roleArray;
+  });
+
+  inquirer
+    .prompt([
+      {
+        type: "input",
+        name: "firstName",
+        message: "What is the employees' first name?",
+      },
+      {
+        type: "input",
+        name: "lastName",
+        message: "What is the employees' last name?",
+      },
+      {
+        type: "list",
+        name: "role",
+        message: "What is the employees' role?",
+        choices: roleArray,
+      },
+      {
+        type: "list",
+        name: "manager",
+        message: "What is the employees' manager?",
+        choices: managerArray,
+      },
+    ])
+    .then((answer) => {
+      db.query(
+        `INSERT INTO employees (first_name, last_name, role_id, manager_id)
+           VALUES ("${answer.firstName}", "${answer.lastName}", 
+           "${roleArray.indexOf(answer.role) + 1}", 
+           "${managerArray.indexOf(answer.manager) + 1}");`,
+        (err, data) => {
+          if (err) throw err;
+        }
+      );
+      console.log(
+        "Added",
+        `${answer.firstName} ${answer.lastName}`,
+        "to the database"
+      );
+      purpose();
+    });
+};
 
 // update an employee role
