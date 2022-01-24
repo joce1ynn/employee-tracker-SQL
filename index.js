@@ -94,6 +94,7 @@ const viewEmployee = () => {
      ON roles.dept_id = departments.dept_id
      LEFT JOIN employees managers
      ON managers.employee_id = employees.manager_id 
+     ORDER BY employee_id
      ;`,
     (err, data) => {
       if (err) throw err;
@@ -162,7 +163,7 @@ const addRole = () => {
           `INSERT INTO roles (title, salary, dept_id)
            VALUES ("${answer.title}", "${answer.salary}", "${
             deptArray.indexOf(answer.department) + 1
-          }") ;`,
+          }");`,
           (err, data) => {
             if (err) throw err;
           }
@@ -176,20 +177,23 @@ const addRole = () => {
 // add an employee
 const addEmployee = () => {
   let managerArray = [];
+  let managerIdArray = [];
   let roleArray = [];
 
   // get manager array
-  db.query(`SELECT * FROM employees WHERE manager_id IS NULL`, (err, data) => {
+  db.query(`SELECT * FROM employees WHERE manager_id IS NULL;`, (err, data) => {
     if (err) throw err;
 
-    data.map((manager) =>
-      managerArray.push(`${manager.first_name} ${manager.last_name}`)
-    );
-    return managerArray;
+    data.map((manager) => {
+      managerArray.push(`${manager.first_name} ${manager.last_name}`);
+      managerIdArray.push(`${manager.employee_id}`);
+    });
+
+    return { managerArray, managerIdArray };
   });
 
   // get role array
-  db.query(`SELECT * FROM roles`, (err, data) => {
+  db.query(`SELECT * FROM roles;`, (err, data) => {
     if (err) throw err;
 
     data.map((role) => roleArray.push(`${role.title}`));
@@ -226,7 +230,8 @@ const addEmployee = () => {
         `INSERT INTO employees (first_name, last_name, role_id, manager_id)
            VALUES ("${answer.firstName}", "${answer.lastName}", 
            "${roleArray.indexOf(answer.role) + 1}", 
-           "${managerArray.indexOf(answer.manager) + 1}");`,
+           "${managerIdArray[managerArray.indexOf(answer.manager)]}");`,
+
         (err, data) => {
           if (err) throw err;
         }
