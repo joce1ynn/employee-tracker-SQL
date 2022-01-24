@@ -70,11 +70,37 @@ const viewDept = () => {
 
 // view all roles
 const viewRole = () => {
-  db.query(`SELECT roles.role_id, roles.title, roles.salary, departments.dept_name from roles INNER JOIN departments on roles.dept_id = departments.dept_id;`, (err, data) => {
-    if (err) throw err;
-    console.table(data);
-    purpose();
-  });
+  db.query(
+    `SELECT roles.role_id, roles.title, departments.dept_name AS department, roles.salary 
+     FROM roles 
+     INNER JOIN departments 
+     ON roles.dept_id = departments.dept_id;`,
+    (err, data) => {
+      if (err) throw err;
+      console.table(data);
+      purpose();
+    }
+  );
+};
+
+// view all employees
+const viewEmployee = () => {
+  db.query(
+    `SELECT employees.employee_id, employees.first_name, employees.last_name, roles.title, departments.dept_name AS department, roles.salary, CONCAT(managers.first_name, " ", managers.last_name) AS manager
+     FROM roles 
+     INNER JOIN employees  
+     ON roles.role_id = employees.role_id
+     INNER JOIN departments
+     ON roles.dept_id = departments.dept_id
+     LEFT JOIN employees managers
+     ON managers.employee_id = employees.manager_id 
+     ;`,
+    (err, data) => {
+      if (err) throw err;
+      console.table(data);
+      purpose();
+    }
+  );
 };
 
 // const addDepartment = () => {
