@@ -103,12 +103,24 @@ const viewEmployee = () => {
   );
 };
 
-// const addDepartment = () => {
-//   return inquirer.prompt([
-//     {
-//       type: "input",
-//       name: "name",
-//       message: "Please provide the department's name:",
-//     },
-//   ]);
-// };
+const addDept = () => {
+  return inquirer
+    .prompt([
+      {
+        type: "input",
+        name: "name",
+        message: "What is the name of the department?",
+      },
+    ])
+    .then((answer) => {
+      db.query(
+        `INSERT INTO departments (dept_name) 
+         VALUES ("${answer.name}") ;`,
+        (err, data) => {
+          if (err) throw err;
+        }
+      );
+      console.log("Added", `${answer.name}`, "to the database");
+      purpose();
+    });
+};
