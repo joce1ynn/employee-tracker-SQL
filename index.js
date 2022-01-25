@@ -176,7 +176,7 @@ const addRole = () => {
 
 // add an employee
 const addEmployee = () => {
-  let managerArray = [];
+  let managerArray = ["null"];
   let managerIdArray = [];
   let roleArray = [];
 
@@ -226,11 +226,18 @@ const addEmployee = () => {
       },
     ])
     .then((answer) => {
+      let roleId = roleArray.indexOf(answer.title) + 1;
+
+      let managerId;
+      if (answer.manager === "null") {
+        managerId = null;
+      } else {
+        managerId = managerIdArray[managerArray.indexOf(answer.manager) - 1];
+      }
+
       db.query(
         `INSERT INTO employees (first_name, last_name, role_id, manager_id)
-           VALUES ("${answer.firstName}", "${answer.lastName}", 
-           "${roleArray.indexOf(answer.title) + 1}", 
-           "${managerIdArray[managerArray.indexOf(answer.manager)]}");`,
+         VALUES ("${answer.firstName}", "${answer.lastName}", ${roleId}, ${managerId});`,
 
         (err, data) => {
           if (err) throw err;
