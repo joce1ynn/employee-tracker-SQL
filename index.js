@@ -295,7 +295,6 @@ const updateRole = () => {
             type: "input",
             name: "managerId",
             message: "What is the employee's manager id?",
-            choices: roleArray,
           },
         ])
         .then((answer) => {
