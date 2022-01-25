@@ -21,7 +21,7 @@ npm install
 
 
 ### Walkthrough Video
-link: https://www.awesomescreenshot.com/video/7015399?key=3428a892b1ac4c806df108fb1bf83f03
+[Click me to see the demo video!](https://www.awesomescreenshot.com/video/7015399?key=3428a892b1ac4c806df108fb1bf83f03)
 
 
 ### Example Screenshot
