@@ -205,23 +205,23 @@ const addEmployee = () => {
       {
         type: "input",
         name: "firstName",
-        message: "What is the employees' first name?",
+        message: "What is the employee's first name?",
       },
       {
         type: "input",
         name: "lastName",
-        message: "What is the employees' last name?",
+        message: "What is the employee's last name?",
       },
       {
         type: "list",
-        name: "role",
-        message: "What is the employees' role?",
+        name: "title",
+        message: "What is the employee's role?",
         choices: roleArray,
       },
       {
         type: "list",
         name: "manager",
-        message: "What is the employees' manager?",
+        message: "What is the employee's manager?",
         choices: managerArray,
       },
     ])
@@ -229,7 +229,7 @@ const addEmployee = () => {
       db.query(
         `INSERT INTO employees (first_name, last_name, role_id, manager_id)
            VALUES ("${answer.firstName}", "${answer.lastName}", 
-           "${roleArray.indexOf(answer.role) + 1}", 
+           "${roleArray.indexOf(answer.title) + 1}", 
            "${managerIdArray[managerArray.indexOf(answer.manager)]}");`,
 
         (err, data) => {
@@ -246,3 +246,60 @@ const addEmployee = () => {
 };
 
 // update an employee role
+const updateRole = () => {
+  db.query(
+    `SELECT employees.employee_id, CONCAT(employees.first_name," ", employees.last_name) AS name, roles.title, roles.role_id
+     FROM employees 
+     INNER JOIN roles 
+     ON roles.role_id = employees.employee_id;`,
+    (err, data) => {
+      if (err) throw err;
+
+      let employeeArray = [];
+      let roleArray = [];
+
+      // get employee array
+      data.map((employee) => employeeArray.push(`${employee.name}`));
+
+      // get role array
+      db.query(`SELECT * FROM roles;`, (err, data) => {
+        if (err) throw err;
+
+        data.map((role) => roleArray.push(`${role.title}`));
+        return roleArray;
+      });
+
+      inquirer
+        .prompt([
+          {
+            type: "list",
+            name: "name",
+            message: "Which employee's role do you want to update?",
+            choices: employeeArray,
+          },
+          {
+            type: "list",
+            name: "title",
+            message: "What is the employee's new role?",
+            choices: roleArray,
+          },
+        ])
+        .then((answer) => {
+          let firstName = answer.name.split(" ")[0];
+          let lastName = answer.name.split(" ")[1];
+          let roleId = roleArray.indexOf(answer.title) + 1;
+
+          db.query(
+            `UPDATE employees
+             SET role_id = "${roleId}"
+             WHERE first_name = "${firstName}" AND last_name = "${lastName}";`,
+            (err, data) => {
+              if (err) throw err;
+            }
+          );
+          console.log("Updated", `${answer.name}`, "'s role to the database");
+          purpose();
+        });
+    }
+  );
+};
