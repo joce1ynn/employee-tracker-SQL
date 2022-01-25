@@ -176,7 +176,7 @@ const addRole = () => {
 
 // add an employee
 const addEmployee = () => {
-  let managerArray = ["null"];
+  let managerArray = ["N/A"];
   let managerIdArray = [];
   let roleArray = [];
 
@@ -229,7 +229,7 @@ const addEmployee = () => {
       let roleId = roleArray.indexOf(answer.title) + 1;
 
       let managerId;
-      if (answer.manager === "null") {
+      if (answer.manager === "N/A") {
         managerId = null;
       } else {
         managerId = managerIdArray[managerArray.indexOf(answer.manager) - 1];
@@ -257,8 +257,9 @@ const updateRole = () => {
   db.query(
     `SELECT employees.employee_id, CONCAT(employees.first_name," ", employees.last_name) AS name, roles.title, roles.role_id
      FROM employees 
-     INNER JOIN roles 
-     ON roles.role_id = employees.employee_id;`,
+     LEFT JOIN roles 
+     ON roles.role_id = employees.employee_id
+     ORDER BY employee_id;`,
     (err, data) => {
       if (err) throw err;
 
@@ -290,6 +291,12 @@ const updateRole = () => {
             message: "What is the employee's new role?",
             choices: roleArray,
           },
+          {
+            type: "input",
+            name: "managerId",
+            message: "What is the employee's manager id?",
+            choices: roleArray,
+          },
         ])
         .then((answer) => {
           let firstName = answer.name.split(" ")[0];
@@ -298,7 +305,7 @@ const updateRole = () => {
 
           db.query(
             `UPDATE employees
-             SET role_id = "${roleId}"
+             SET role_id = ${roleId}, manager_id = ${answer.managerId}
              WHERE first_name = "${firstName}" AND last_name = "${lastName}";`,
             (err, data) => {
               if (err) throw err;
