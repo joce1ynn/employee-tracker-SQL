@@ -41,11 +41,11 @@ After installing npm packages, the application will be invoked by using the foll
 node index.js
 ```
 
-#### Walkthrough Video
+### Walkthrough Video
 
 [Click me to see the demo video!](https://www.awesomescreenshot.com/video/7015399?key=3428a892b1ac4c806df108fb1bf83f03)
 
-#### Example Screenshot
+### Example Screenshot
 
 ![Screenshot](./assets/images/ET-1.png)
 ![Screenshot](./assets/images/ET-2.png)
